@@ -9,6 +9,8 @@ github_username:  guy-dar
 
 # Build settings
 theme: minima
+markdown: kramdown
+
 plugins:
   - jekyll-feed
   - jekyll-scholar
