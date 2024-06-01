@@ -11,6 +11,10 @@ github_username:  guy-dar
 theme: minima
 plugins:
   - jekyll-feed
+  - jekyll-scholar
+
+scholar:
+  style: modern-language-association
 
 kramdown:
   math_engine: mathjax
