@@ -5,7 +5,7 @@ date:   2024-05-31 06:16:20 +0300
 categories: jekyll update
 ---
 
-{% include head.html %}
+{% include custom_head.html %}
 
 $$
 x = 1
