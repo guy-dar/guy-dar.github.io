@@ -2,9 +2,11 @@
 layout: post
 title:  "Test"
 date:   2024-05-31 06:16:20 +0300
-usemath: true
 categories: jekyll update
 ---
+
+{% include head.html %}
+
 $$
 x = 1
 $$
