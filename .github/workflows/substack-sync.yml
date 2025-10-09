@@ -1,0 +1,61 @@
+name: Sync Substack Posts
+
+on:
+  schedule:
+    - cron: "0 * * * *"   # run hourly
+  workflow_dispatch:       # allow manual runs
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+
+      - name: Install feedparser
+        run: pip install feedparser
+
+      - name: Generate redirect pages
+        run: |
+          python << 'EOF'
+          import os, re, feedparser
+
+          FEED_URL = "https://guydar.substack.com/feed"
+          OUT_DIR = "posts"
+
+          os.makedirs(OUT_DIR, exist_ok=True)
+
+          feed = feedparser.parse(FEED_URL)
+          template = """<!DOCTYPE html>
+          <html>
+          <head>
+            <meta http-equiv="refresh" content="0; url={url}">
+            <link rel="canonical" href="{url}" />
+          </head>
+          <body>
+            <p>Redirecting to <a href="{url}">{url}</a>...</p>
+          </body>
+          </html>
+          """
+
+          for entry in feed.entries:
+              # create a URL-safe slug from the Substack link
+              slug = entry.link.rstrip('/').split('/')[-1]
+              post_dir = os.path.join(OUT_DIR, slug)
+              os.makedirs(post_dir, exist_ok=True)
+              with open(os.path.join(post_dir, "index.html"), "w") as f:
+                  f.write(template.format(url=entry.link))
+          EOF
+
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add posts/
+          git commit -m "Update Substack redirects" || echo "No changes"
+          git push
